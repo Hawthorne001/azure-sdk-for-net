@@ -21,13 +21,21 @@ namespace Azure.ResourceManager.CosmosDB.Models
 
         void IJsonModel<CassandraClusterPublicStatus>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<CassandraClusterPublicStatus>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(CassandraClusterPublicStatus)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             if (Optional.IsDefined(ETag))
             {
                 writer.WritePropertyName("eTag"u8);
@@ -83,7 +91,6 @@ namespace Azure.ResourceManager.CosmosDB.Models
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         CassandraClusterPublicStatus IJsonModel<CassandraClusterPublicStatus>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -106,7 +113,7 @@ namespace Azure.ResourceManager.CosmosDB.Models
             {
                 return null;
             }
-            ETag? eTag = default;
+            ETag? etag = default;
             CassandraReaperStatus reaperStatus = default;
             IReadOnlyList<CassandraConnectionError> connectionErrors = default;
             IReadOnlyList<CassandraError> errors = default;
@@ -121,7 +128,7 @@ namespace Azure.ResourceManager.CosmosDB.Models
                     {
                         continue;
                     }
-                    eTag = new ETag(property.Value.GetString());
+                    etag = new ETag(property.Value.GetString());
                     continue;
                 }
                 if (property.NameEquals("reaperStatus"u8))
@@ -182,7 +189,7 @@ namespace Azure.ResourceManager.CosmosDB.Models
             }
             serializedAdditionalRawData = rawDataDictionary;
             return new CassandraClusterPublicStatus(
-                eTag,
+                etag,
                 reaperStatus,
                 connectionErrors ?? new ChangeTrackingList<CassandraConnectionError>(),
                 errors ?? new ChangeTrackingList<CassandraError>(),

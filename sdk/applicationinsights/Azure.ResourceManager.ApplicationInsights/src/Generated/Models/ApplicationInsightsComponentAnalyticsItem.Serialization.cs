@@ -20,13 +20,21 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
 
         void IJsonModel<ApplicationInsightsComponentAnalyticsItem>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<ApplicationInsightsComponentAnalyticsItem>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(ApplicationInsightsComponentAnalyticsItem)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             if (Optional.IsDefined(Id))
             {
                 writer.WritePropertyName("Id"u8);
@@ -52,20 +60,20 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
                 writer.WritePropertyName("Scope"u8);
                 writer.WriteStringValue(Scope.Value.ToString());
             }
-            if (Optional.IsDefined(ItemType))
+            if (Optional.IsDefined(ComponentItemType))
             {
                 writer.WritePropertyName("Type"u8);
-                writer.WriteStringValue(ItemType.Value.ToString());
+                writer.WriteStringValue(ComponentItemType.Value.ToString());
             }
-            if (options.Format != "W" && Optional.IsDefined(TimeCreated))
+            if (options.Format != "W" && Optional.IsDefined(CreatedOn))
             {
                 writer.WritePropertyName("TimeCreated"u8);
-                writer.WriteStringValue(TimeCreated);
+                writer.WriteStringValue(CreatedOn.Value, "O");
             }
-            if (options.Format != "W" && Optional.IsDefined(TimeModified))
+            if (options.Format != "W" && Optional.IsDefined(ModifiedOn))
             {
                 writer.WritePropertyName("TimeModified"u8);
-                writer.WriteStringValue(TimeModified);
+                writer.WriteStringValue(ModifiedOn.Value, "O");
             }
             if (Optional.IsDefined(Properties))
             {
@@ -87,7 +95,6 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         ApplicationInsightsComponentAnalyticsItem IJsonModel<ApplicationInsightsComponentAnalyticsItem>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -114,10 +121,10 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
             string name = default;
             string content = default;
             string version = default;
-            ItemScope? scope = default;
-            ItemType? type = default;
-            string timeCreated = default;
-            string timeModified = default;
+            ComponentItemScope? scope = default;
+            ComponentItemType? type = default;
+            DateTimeOffset? timeCreated = default;
+            DateTimeOffset? timeModified = default;
             ApplicationInsightsComponentAnalyticsItemProperties properties = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
@@ -149,7 +156,7 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
                     {
                         continue;
                     }
-                    scope = new ItemScope(property.Value.GetString());
+                    scope = new ComponentItemScope(property.Value.GetString());
                     continue;
                 }
                 if (property.NameEquals("Type"u8))
@@ -158,17 +165,25 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
                     {
                         continue;
                     }
-                    type = new ItemType(property.Value.GetString());
+                    type = new ComponentItemType(property.Value.GetString());
                     continue;
                 }
                 if (property.NameEquals("TimeCreated"u8))
                 {
-                    timeCreated = property.Value.GetString();
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    timeCreated = property.Value.GetDateTimeOffset("O");
                     continue;
                 }
                 if (property.NameEquals("TimeModified"u8))
                 {
-                    timeModified = property.Value.GetString();
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    timeModified = property.Value.GetDateTimeOffset("O");
                     continue;
                 }
                 if (property.NameEquals("Properties"u8))
@@ -317,7 +332,7 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
                 }
             }
 
-            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ItemType), out propertyOverride);
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ComponentItemType), out propertyOverride);
             if (hasPropertyOverride)
             {
                 builder.Append("  Type: ");
@@ -325,14 +340,14 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
             }
             else
             {
-                if (Optional.IsDefined(ItemType))
+                if (Optional.IsDefined(ComponentItemType))
                 {
                     builder.Append("  Type: ");
-                    builder.AppendLine($"'{ItemType.Value.ToString()}'");
+                    builder.AppendLine($"'{ComponentItemType.Value.ToString()}'");
                 }
             }
 
-            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(TimeCreated), out propertyOverride);
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(CreatedOn), out propertyOverride);
             if (hasPropertyOverride)
             {
                 builder.Append("  TimeCreated: ");
@@ -340,22 +355,15 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
             }
             else
             {
-                if (Optional.IsDefined(TimeCreated))
+                if (Optional.IsDefined(CreatedOn))
                 {
                     builder.Append("  TimeCreated: ");
-                    if (TimeCreated.Contains(Environment.NewLine))
-                    {
-                        builder.AppendLine("'''");
-                        builder.AppendLine($"{TimeCreated}'''");
-                    }
-                    else
-                    {
-                        builder.AppendLine($"'{TimeCreated}'");
-                    }
+                    var formattedDateTimeString = TypeFormatters.ToString(CreatedOn.Value, "o");
+                    builder.AppendLine($"'{formattedDateTimeString}'");
                 }
             }
 
-            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(TimeModified), out propertyOverride);
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ModifiedOn), out propertyOverride);
             if (hasPropertyOverride)
             {
                 builder.Append("  TimeModified: ");
@@ -363,18 +371,11 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
             }
             else
             {
-                if (Optional.IsDefined(TimeModified))
+                if (Optional.IsDefined(ModifiedOn))
                 {
                     builder.Append("  TimeModified: ");
-                    if (TimeModified.Contains(Environment.NewLine))
-                    {
-                        builder.AppendLine("'''");
-                        builder.AppendLine($"{TimeModified}'''");
-                    }
-                    else
-                    {
-                        builder.AppendLine($"'{TimeModified}'");
-                    }
+                    var formattedDateTimeString = TypeFormatters.ToString(ModifiedOn.Value, "o");
+                    builder.AppendLine($"'{formattedDateTimeString}'");
                 }
             }
 

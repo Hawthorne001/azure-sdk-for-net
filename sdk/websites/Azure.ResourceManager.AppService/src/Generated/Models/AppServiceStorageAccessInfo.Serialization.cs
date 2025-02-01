@@ -20,13 +20,21 @@ namespace Azure.ResourceManager.AppService.Models
 
         void IJsonModel<AppServiceStorageAccessInfo>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<AppServiceStorageAccessInfo>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(AppServiceStorageAccessInfo)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             if (Optional.IsDefined(StorageType))
             {
                 writer.WritePropertyName("type"u8);
@@ -57,6 +65,11 @@ namespace Azure.ResourceManager.AppService.Models
                 writer.WritePropertyName("state"u8);
                 writer.WriteStringValue(State.Value.ToSerialString());
             }
+            if (Optional.IsDefined(Protocol))
+            {
+                writer.WritePropertyName("protocol"u8);
+                writer.WriteStringValue(Protocol.Value.ToString());
+            }
             if (options.Format != "W" && _serializedAdditionalRawData != null)
             {
                 foreach (var item in _serializedAdditionalRawData)
@@ -72,7 +85,6 @@ namespace Azure.ResourceManager.AppService.Models
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         AppServiceStorageAccessInfo IJsonModel<AppServiceStorageAccessInfo>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -101,6 +113,7 @@ namespace Azure.ResourceManager.AppService.Models
             string accessKey = default;
             string mountPath = default;
             AppServiceStorageAccountState? state = default;
+            AppServiceStorageProtocol? protocol = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
@@ -143,6 +156,15 @@ namespace Azure.ResourceManager.AppService.Models
                     state = property.Value.GetString().ToAppServiceStorageAccountState();
                     continue;
                 }
+                if (property.NameEquals("protocol"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    protocol = new AppServiceStorageProtocol(property.Value.GetString());
+                    continue;
+                }
                 if (options.Format != "W")
                 {
                     rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
@@ -156,6 +178,7 @@ namespace Azure.ResourceManager.AppService.Models
                 accessKey,
                 mountPath,
                 state,
+                protocol,
                 serializedAdditionalRawData);
         }
 
@@ -289,6 +312,21 @@ namespace Azure.ResourceManager.AppService.Models
                 {
                     builder.Append("  state: ");
                     builder.AppendLine($"'{State.Value.ToSerialString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Protocol), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  protocol: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Protocol))
+                {
+                    builder.Append("  protocol: ");
+                    builder.AppendLine($"'{Protocol.Value.ToString()}'");
                 }
             }
 

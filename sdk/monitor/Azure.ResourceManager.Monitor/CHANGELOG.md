@@ -1,5 +1,23 @@
 # Release History
 
+## 1.4.0-beta.2 (Unreleased)
+
+### Features Added
+
+- Exposed `JsonModelWriteCore` for model serialization procedure.
+
+### Breaking Changes
+
+### Bugs Fixed
+
+### Other Changes
+
+## 1.4.0-beta.1 (2024-09-03)
+
+### Features Added
+
+- Added azure monitor pipeline group APIs (version `2023-10-01-preview`)
+
 ## 1.3.1 (2024-04-29)
 
 ### Features Added
@@ -129,4 +147,4 @@ This package follows the [new Azure SDK guidelines](https://azure.github.io/azur
 
 This package is a Public Preview version, so expect incompatible changes in subsequent releases as we improve the product. To provide feedback, submit an issue in our [Azure SDK for .NET GitHub repo](https://github.com/Azure/azure-sdk-for-net/issues).
 
-> NOTE: For more information about unified authentication, please refer to [Microsoft Azure Identity documentation for .NET](https://docs.microsoft.com//dotnet/api/overview/azure/identity-readme?view=azure-dotnet).
+> NOTE: For more information about unified authentication, please refer to [Microsoft Azure Identity documentation for .NET](https://learn.microsoft.com/dotnet/api/overview/azure/identity-readme?view=azure-dotnet).

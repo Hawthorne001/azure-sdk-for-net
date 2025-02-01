@@ -19,13 +19,21 @@ namespace Azure.ResourceManager.Compute.Models
 
         void IJsonModel<GalleryImageFeature>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<GalleryImageFeature>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(GalleryImageFeature)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             if (Optional.IsDefined(Name))
             {
                 writer.WritePropertyName("name"u8);
@@ -35,6 +43,11 @@ namespace Azure.ResourceManager.Compute.Models
             {
                 writer.WritePropertyName("value"u8);
                 writer.WriteStringValue(Value);
+            }
+            if (Optional.IsDefined(StartsAtVersion))
+            {
+                writer.WritePropertyName("startsAtVersion"u8);
+                writer.WriteStringValue(StartsAtVersion);
             }
             if (options.Format != "W" && _serializedAdditionalRawData != null)
             {
@@ -51,7 +64,6 @@ namespace Azure.ResourceManager.Compute.Models
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         GalleryImageFeature IJsonModel<GalleryImageFeature>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -76,6 +88,7 @@ namespace Azure.ResourceManager.Compute.Models
             }
             string name = default;
             string value = default;
+            string startsAtVersion = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
@@ -90,13 +103,18 @@ namespace Azure.ResourceManager.Compute.Models
                     value = property.Value.GetString();
                     continue;
                 }
+                if (property.NameEquals("startsAtVersion"u8))
+                {
+                    startsAtVersion = property.Value.GetString();
+                    continue;
+                }
                 if (options.Format != "W")
                 {
                     rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
                 }
             }
             serializedAdditionalRawData = rawDataDictionary;
-            return new GalleryImageFeature(name, value, serializedAdditionalRawData);
+            return new GalleryImageFeature(name, value, startsAtVersion, serializedAdditionalRawData);
         }
 
         BinaryData IPersistableModel<GalleryImageFeature>.Write(ModelReaderWriterOptions options)

@@ -20,46 +20,22 @@ namespace Azure.ResourceManager.NetApp.Models
 
         void IJsonModel<CapacityPoolPatch>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<CapacityPoolPatch>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(CapacityPoolPatch)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
-            if (Optional.IsCollectionDefined(Tags))
-            {
-                writer.WritePropertyName("tags"u8);
-                writer.WriteStartObject();
-                foreach (var item in Tags)
-                {
-                    writer.WritePropertyName(item.Key);
-                    writer.WriteStringValue(item.Value);
-                }
-                writer.WriteEndObject();
-            }
-            writer.WritePropertyName("location"u8);
-            writer.WriteStringValue(Location);
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("id"u8);
-                writer.WriteStringValue(Id);
-            }
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("name"u8);
-                writer.WriteStringValue(Name);
-            }
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("type"u8);
-                writer.WriteStringValue(ResourceType);
-            }
-            if (options.Format != "W" && Optional.IsDefined(SystemData))
-            {
-                writer.WritePropertyName("systemData"u8);
-                JsonSerializer.Serialize(writer, SystemData);
-            }
+            base.JsonModelWriteCore(writer, options);
             writer.WritePropertyName("properties"u8);
             writer.WriteStartObject();
             if (Optional.IsDefined(Size))
@@ -77,20 +53,16 @@ namespace Azure.ResourceManager.NetApp.Models
                 writer.WritePropertyName("coolAccess"u8);
                 writer.WriteBooleanValue(IsCoolAccessEnabled.Value);
             }
-            writer.WriteEndObject();
-            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            if (Optional.IsDefined(CustomThroughputMibps))
             {
-                foreach (var item in _serializedAdditionalRawData)
+                if (CustomThroughputMibps != null)
                 {
-                    writer.WritePropertyName(item.Key);
-#if NET6_0_OR_GREATER
-				writer.WriteRawValue(item.Value);
-#else
-                    using (JsonDocument document = JsonDocument.Parse(item.Value))
-                    {
-                        JsonSerializer.Serialize(writer, document.RootElement);
-                    }
-#endif
+                    writer.WritePropertyName("customThroughputMibps"u8);
+                    writer.WriteNumberValue(CustomThroughputMibps.Value);
+                }
+                else
+                {
+                    writer.WriteNull("customThroughputMibps");
                 }
             }
             writer.WriteEndObject();
@@ -125,6 +97,7 @@ namespace Azure.ResourceManager.NetApp.Models
             long? size = default;
             CapacityPoolQosType? qosType = default;
             bool? coolAccess = default;
+            float? customThroughputMibps = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
@@ -208,6 +181,16 @@ namespace Azure.ResourceManager.NetApp.Models
                             coolAccess = property0.Value.GetBoolean();
                             continue;
                         }
+                        if (property0.NameEquals("customThroughputMibps"u8))
+                        {
+                            if (property0.Value.ValueKind == JsonValueKind.Null)
+                            {
+                                customThroughputMibps = null;
+                                continue;
+                            }
+                            customThroughputMibps = property0.Value.GetSingle();
+                            continue;
+                        }
                     }
                     continue;
                 }
@@ -227,6 +210,7 @@ namespace Azure.ResourceManager.NetApp.Models
                 size,
                 qosType,
                 coolAccess,
+                customThroughputMibps,
                 serializedAdditionalRawData);
         }
 

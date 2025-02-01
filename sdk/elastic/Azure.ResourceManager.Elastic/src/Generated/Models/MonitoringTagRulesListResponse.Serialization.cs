@@ -19,13 +19,21 @@ namespace Azure.ResourceManager.Elastic.Models
 
         void IJsonModel<MonitoringTagRulesListResponse>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<MonitoringTagRulesListResponse>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(MonitoringTagRulesListResponse)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             if (Optional.IsCollectionDefined(Value))
             {
                 writer.WritePropertyName("value"u8);
@@ -56,7 +64,6 @@ namespace Azure.ResourceManager.Elastic.Models
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         MonitoringTagRulesListResponse IJsonModel<MonitoringTagRulesListResponse>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -79,7 +86,7 @@ namespace Azure.ResourceManager.Elastic.Models
             {
                 return null;
             }
-            IReadOnlyList<MonitoringTagRuleData> value = default;
+            IReadOnlyList<ElasticTagRuleData> value = default;
             string nextLink = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
@@ -91,10 +98,10 @@ namespace Azure.ResourceManager.Elastic.Models
                     {
                         continue;
                     }
-                    List<MonitoringTagRuleData> array = new List<MonitoringTagRuleData>();
+                    List<ElasticTagRuleData> array = new List<ElasticTagRuleData>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(MonitoringTagRuleData.DeserializeMonitoringTagRuleData(item, options));
+                        array.Add(ElasticTagRuleData.DeserializeElasticTagRuleData(item, options));
                     }
                     value = array;
                     continue;
@@ -110,7 +117,7 @@ namespace Azure.ResourceManager.Elastic.Models
                 }
             }
             serializedAdditionalRawData = rawDataDictionary;
-            return new MonitoringTagRulesListResponse(value ?? new ChangeTrackingList<MonitoringTagRuleData>(), nextLink, serializedAdditionalRawData);
+            return new MonitoringTagRulesListResponse(value ?? new ChangeTrackingList<ElasticTagRuleData>(), nextLink, serializedAdditionalRawData);
         }
 
         BinaryData IPersistableModel<MonitoringTagRulesListResponse>.Write(ModelReaderWriterOptions options)

@@ -21,13 +21,21 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
 
         void IJsonModel<WebTestListResult>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<WebTestListResult>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(WebTestListResult)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             writer.WritePropertyName("value"u8);
             writer.WriteStartArray();
             foreach (var item in Value)
@@ -55,7 +63,6 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         WebTestListResult IJsonModel<WebTestListResult>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -78,7 +85,7 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
             {
                 return null;
             }
-            IReadOnlyList<WebTestData> value = default;
+            IReadOnlyList<ApplicationInsightsWebTestData> value = default;
             string nextLink = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
@@ -86,10 +93,10 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
             {
                 if (property.NameEquals("value"u8))
                 {
-                    List<WebTestData> array = new List<WebTestData>();
+                    List<ApplicationInsightsWebTestData> array = new List<ApplicationInsightsWebTestData>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(WebTestData.DeserializeWebTestData(item, options));
+                        array.Add(ApplicationInsightsWebTestData.DeserializeApplicationInsightsWebTestData(item, options));
                     }
                     value = array;
                     continue;

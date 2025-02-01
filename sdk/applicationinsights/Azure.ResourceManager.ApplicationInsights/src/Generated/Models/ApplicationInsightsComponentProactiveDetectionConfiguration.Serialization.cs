@@ -21,13 +21,21 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
 
         void IJsonModel<ApplicationInsightsComponentProactiveDetectionConfiguration>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<ApplicationInsightsComponentProactiveDetectionConfiguration>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(ApplicationInsightsComponentProactiveDetectionConfiguration)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             if (Optional.IsDefined(Name))
             {
                 writer.WritePropertyName("Name"u8);
@@ -53,10 +61,10 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
                 }
                 writer.WriteEndArray();
             }
-            if (Optional.IsDefined(LastUpdatedTime))
+            if (Optional.IsDefined(LastUpdatedOn))
             {
                 writer.WritePropertyName("LastUpdatedTime"u8);
-                writer.WriteStringValue(LastUpdatedTime);
+                writer.WriteStringValue(LastUpdatedOn.Value, "O");
             }
             if (Optional.IsDefined(RuleDefinitions))
             {
@@ -78,7 +86,6 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         ApplicationInsightsComponentProactiveDetectionConfiguration IJsonModel<ApplicationInsightsComponentProactiveDetectionConfiguration>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -105,7 +112,7 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
             bool? enabled = default;
             bool? sendEmailsToSubscriptionOwners = default;
             IList<string> customEmails = default;
-            string lastUpdatedTime = default;
+            DateTimeOffset? lastUpdatedTime = default;
             ApplicationInsightsComponentProactiveDetectionConfigurationRuleDefinitions ruleDefinitions = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
@@ -150,7 +157,11 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
                 }
                 if (property.NameEquals("LastUpdatedTime"u8))
                 {
-                    lastUpdatedTime = property.Value.GetString();
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    lastUpdatedTime = property.Value.GetDateTimeOffset("O");
                     continue;
                 }
                 if (property.NameEquals("RuleDefinitions"u8))
@@ -280,7 +291,7 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
                 }
             }
 
-            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(LastUpdatedTime), out propertyOverride);
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(LastUpdatedOn), out propertyOverride);
             if (hasPropertyOverride)
             {
                 builder.Append("  LastUpdatedTime: ");
@@ -288,18 +299,11 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
             }
             else
             {
-                if (Optional.IsDefined(LastUpdatedTime))
+                if (Optional.IsDefined(LastUpdatedOn))
                 {
                     builder.Append("  LastUpdatedTime: ");
-                    if (LastUpdatedTime.Contains(Environment.NewLine))
-                    {
-                        builder.AppendLine("'''");
-                        builder.AppendLine($"{LastUpdatedTime}'''");
-                    }
-                    else
-                    {
-                        builder.AppendLine($"'{LastUpdatedTime}'");
-                    }
+                    var formattedDateTimeString = TypeFormatters.ToString(LastUpdatedOn.Value, "o");
+                    builder.AppendLine($"'{formattedDateTimeString}'");
                 }
             }
 

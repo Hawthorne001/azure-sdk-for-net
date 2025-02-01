@@ -23,37 +23,26 @@ namespace Azure.ResourceManager.EventHubs
 
         void IJsonModel<EventHubData>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<EventHubData>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(EventHubData)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
+            base.JsonModelWriteCore(writer, options);
             if (options.Format != "W" && Optional.IsDefined(Location))
             {
                 writer.WritePropertyName("location"u8);
                 writer.WriteStringValue(Location.Value);
-            }
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("id"u8);
-                writer.WriteStringValue(Id);
-            }
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("name"u8);
-                writer.WriteStringValue(Name);
-            }
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("type"u8);
-                writer.WriteStringValue(ResourceType);
-            }
-            if (options.Format != "W" && Optional.IsDefined(SystemData))
-            {
-                writer.WritePropertyName("systemData"u8);
-                JsonSerializer.Serialize(writer, SystemData);
             }
             writer.WritePropertyName("properties"u8);
             writer.WriteStartObject();
@@ -87,6 +76,11 @@ namespace Azure.ResourceManager.EventHubs
                 writer.WritePropertyName("status"u8);
                 writer.WriteStringValue(Status.Value.ToSerialString());
             }
+            if (Optional.IsDefined(UserMetadata))
+            {
+                writer.WritePropertyName("userMetadata"u8);
+                writer.WriteStringValue(UserMetadata);
+            }
             if (Optional.IsDefined(CaptureDescription))
             {
                 writer.WritePropertyName("captureDescription"u8);
@@ -96,22 +90,6 @@ namespace Azure.ResourceManager.EventHubs
             {
                 writer.WritePropertyName("retentionDescription"u8);
                 writer.WriteObjectValue(RetentionDescription, options);
-            }
-            writer.WriteEndObject();
-            if (options.Format != "W" && _serializedAdditionalRawData != null)
-            {
-                foreach (var item in _serializedAdditionalRawData)
-                {
-                    writer.WritePropertyName(item.Key);
-#if NET6_0_OR_GREATER
-				writer.WriteRawValue(item.Value);
-#else
-                    using (JsonDocument document = JsonDocument.Parse(item.Value))
-                    {
-                        JsonSerializer.Serialize(writer, document.RootElement);
-                    }
-#endif
-                }
             }
             writer.WriteEndObject();
         }
@@ -146,6 +124,7 @@ namespace Azure.ResourceManager.EventHubs
             DateTimeOffset? updatedAt = default;
             long? partitionCount = default;
             EventHubEntityStatus? status = default;
+            string userMetadata = default;
             CaptureDescription captureDescription = default;
             RetentionDescription retentionDescription = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
@@ -244,6 +223,11 @@ namespace Azure.ResourceManager.EventHubs
                             status = property0.Value.GetString().ToEventHubEntityStatus();
                             continue;
                         }
+                        if (property0.NameEquals("userMetadata"u8))
+                        {
+                            userMetadata = property0.Value.GetString();
+                            continue;
+                        }
                         if (property0.NameEquals("captureDescription"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
@@ -281,6 +265,7 @@ namespace Azure.ResourceManager.EventHubs
                 updatedAt,
                 partitionCount,
                 status,
+                userMetadata,
                 captureDescription,
                 retentionDescription,
                 location,
@@ -463,6 +448,29 @@ namespace Azure.ResourceManager.EventHubs
                 {
                     builder.Append("    status: ");
                     builder.AppendLine($"'{Status.Value.ToSerialString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(UserMetadata), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    userMetadata: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(UserMetadata))
+                {
+                    builder.Append("    userMetadata: ");
+                    if (UserMetadata.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{UserMetadata}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{UserMetadata}'");
+                    }
                 }
             }
 

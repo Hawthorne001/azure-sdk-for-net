@@ -19,13 +19,21 @@ namespace Azure.ResourceManager.Elastic.Models
 
         void IJsonModel<ElasticMonitorResourceListResponse>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<ElasticMonitorResourceListResponse>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(ElasticMonitorResourceListResponse)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             if (Optional.IsCollectionDefined(Value))
             {
                 writer.WritePropertyName("value"u8);
@@ -56,7 +64,6 @@ namespace Azure.ResourceManager.Elastic.Models
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         ElasticMonitorResourceListResponse IJsonModel<ElasticMonitorResourceListResponse>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -79,7 +86,7 @@ namespace Azure.ResourceManager.Elastic.Models
             {
                 return null;
             }
-            IReadOnlyList<ElasticMonitorResourceData> value = default;
+            IReadOnlyList<ElasticMonitorData> value = default;
             string nextLink = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
@@ -91,10 +98,10 @@ namespace Azure.ResourceManager.Elastic.Models
                     {
                         continue;
                     }
-                    List<ElasticMonitorResourceData> array = new List<ElasticMonitorResourceData>();
+                    List<ElasticMonitorData> array = new List<ElasticMonitorData>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(ElasticMonitorResourceData.DeserializeElasticMonitorResourceData(item, options));
+                        array.Add(ElasticMonitorData.DeserializeElasticMonitorData(item, options));
                     }
                     value = array;
                     continue;
@@ -110,7 +117,7 @@ namespace Azure.ResourceManager.Elastic.Models
                 }
             }
             serializedAdditionalRawData = rawDataDictionary;
-            return new ElasticMonitorResourceListResponse(value ?? new ChangeTrackingList<ElasticMonitorResourceData>(), nextLink, serializedAdditionalRawData);
+            return new ElasticMonitorResourceListResponse(value ?? new ChangeTrackingList<ElasticMonitorData>(), nextLink, serializedAdditionalRawData);
         }
 
         BinaryData IPersistableModel<ElasticMonitorResourceListResponse>.Write(ModelReaderWriterOptions options)

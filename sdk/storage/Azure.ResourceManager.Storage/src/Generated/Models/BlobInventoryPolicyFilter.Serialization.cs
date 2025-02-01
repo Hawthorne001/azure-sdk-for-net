@@ -21,13 +21,21 @@ namespace Azure.ResourceManager.Storage.Models
 
         void IJsonModel<BlobInventoryPolicyFilter>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<BlobInventoryPolicyFilter>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(BlobInventoryPolicyFilter)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             if (Optional.IsCollectionDefined(IncludePrefix))
             {
                 writer.WritePropertyName("prefixMatch"u8);
@@ -73,6 +81,11 @@ namespace Azure.ResourceManager.Storage.Models
                 writer.WritePropertyName("includeDeleted"u8);
                 writer.WriteBooleanValue(IncludeDeleted.Value);
             }
+            if (Optional.IsDefined(CreationTime))
+            {
+                writer.WritePropertyName("creationTime"u8);
+                writer.WriteObjectValue(CreationTime, options);
+            }
             if (options.Format != "W" && _serializedAdditionalRawData != null)
             {
                 foreach (var item in _serializedAdditionalRawData)
@@ -88,7 +101,6 @@ namespace Azure.ResourceManager.Storage.Models
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         BlobInventoryPolicyFilter IJsonModel<BlobInventoryPolicyFilter>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -117,6 +129,7 @@ namespace Azure.ResourceManager.Storage.Models
             bool? includeBlobVersions = default;
             bool? includeSnapshots = default;
             bool? includeDeleted = default;
+            BlobInventoryCreationTime creationTime = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
@@ -190,6 +203,15 @@ namespace Azure.ResourceManager.Storage.Models
                     includeDeleted = property.Value.GetBoolean();
                     continue;
                 }
+                if (property.NameEquals("creationTime"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    creationTime = BlobInventoryCreationTime.DeserializeBlobInventoryCreationTime(property.Value, options);
+                    continue;
+                }
                 if (options.Format != "W")
                 {
                     rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
@@ -203,6 +225,7 @@ namespace Azure.ResourceManager.Storage.Models
                 includeBlobVersions,
                 includeSnapshots,
                 includeDeleted,
+                creationTime,
                 serializedAdditionalRawData);
         }
 
@@ -370,6 +393,24 @@ namespace Azure.ResourceManager.Storage.Models
                     builder.Append("  includeDeleted: ");
                     var boolValue = IncludeDeleted.Value == true ? "true" : "false";
                     builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue("CreationTimeLastNDays", out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  creationTime: ");
+                builder.AppendLine("{");
+                builder.Append("    lastNDays: ");
+                builder.AppendLine(propertyOverride);
+                builder.AppendLine("  }");
+            }
+            else
+            {
+                if (Optional.IsDefined(CreationTime))
+                {
+                    builder.Append("  creationTime: ");
+                    BicepSerializationHelpers.AppendChildObject(builder, CreationTime, options, 2, false, "  creationTime: ");
                 }
             }
 

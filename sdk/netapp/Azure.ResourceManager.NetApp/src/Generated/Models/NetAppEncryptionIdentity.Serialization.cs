@@ -19,13 +19,21 @@ namespace Azure.ResourceManager.NetApp.Models
 
         void IJsonModel<NetAppEncryptionIdentity>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<NetAppEncryptionIdentity>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(NetAppEncryptionIdentity)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             if (options.Format != "W" && Optional.IsDefined(PrincipalId))
             {
                 writer.WritePropertyName("principalId"u8);
@@ -35,6 +43,11 @@ namespace Azure.ResourceManager.NetApp.Models
             {
                 writer.WritePropertyName("userAssignedIdentity"u8);
                 writer.WriteStringValue(UserAssignedIdentity);
+            }
+            if (Optional.IsDefined(FederatedClientId))
+            {
+                writer.WritePropertyName("federatedClientId"u8);
+                writer.WriteStringValue(FederatedClientId);
             }
             if (options.Format != "W" && _serializedAdditionalRawData != null)
             {
@@ -51,7 +64,6 @@ namespace Azure.ResourceManager.NetApp.Models
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         NetAppEncryptionIdentity IJsonModel<NetAppEncryptionIdentity>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -76,6 +88,7 @@ namespace Azure.ResourceManager.NetApp.Models
             }
             string principalId = default;
             string userAssignedIdentity = default;
+            string federatedClientId = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
@@ -90,13 +103,18 @@ namespace Azure.ResourceManager.NetApp.Models
                     userAssignedIdentity = property.Value.GetString();
                     continue;
                 }
+                if (property.NameEquals("federatedClientId"u8))
+                {
+                    federatedClientId = property.Value.GetString();
+                    continue;
+                }
                 if (options.Format != "W")
                 {
                     rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
                 }
             }
             serializedAdditionalRawData = rawDataDictionary;
-            return new NetAppEncryptionIdentity(principalId, userAssignedIdentity, serializedAdditionalRawData);
+            return new NetAppEncryptionIdentity(principalId, userAssignedIdentity, federatedClientId, serializedAdditionalRawData);
         }
 
         BinaryData IPersistableModel<NetAppEncryptionIdentity>.Write(ModelReaderWriterOptions options)

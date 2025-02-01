@@ -1,5 +1,11 @@
 # Azure OpenAI: OpenAI Assistants client library for .NET
 
+## IMPORTANT NOTE: Assistants is converging!
+
+With the June 2024 preview release of the official [OpenAI .NET library](https://github.com/openai/openai-dotnet), Azure OpenAI has converged with OpenAI's language support by converting the previously standalone [Azure.AI.OpenAI library](https://github.com/Azure/azure-sdk-for-net/tree/main/sdk/openai/Azure.AI.OpenAI), which going forward will now be an extension library for Azure OpenAI Service support with OpenAI's library. The new `2.*` solution includes full, converged support for Assistants, including the latest v2 and streaming features. Migration guides are not yet available at initial release but will come soon. Please see the Azure.AI.OpenAI project for more details.
+
+---
+
 The Azure OpenAI Assistants client library for .NET is an adaptation of OpenAI's REST APIs that provides an idiomatic interface
 and rich integration with the rest of the Azure SDK ecosystem. It will connect to Azure OpenAI resources *or* to the
 non-Azure OpenAI inference endpoint, making it a great choice for even non-Azure OpenAI development.
@@ -353,12 +359,12 @@ This project has adopted the [Microsoft Open Source Code of Conduct][code_of_con
 [azure_identity_dac]: https://learn.microsoft.com/dotnet/api/azure.identity.defaultazurecredential?view=azure-dotnet
 [msdocs_openai_completion]: https://learn.microsoft.com/azure/cognitive-services/openai/how-to/completions
 [msdocs_openai_embedding]: https://learn.microsoft.com/azure/cognitive-services/openai/concepts/understand-embeddings
-[style-guide-msft]: https://docs.microsoft.com/style-guide/capitalization
+[style-guide-msft]: https://learn.microsoft.com/style-guide/capitalization
 [style-guide-cloud]: https://aka.ms/azsdk/cloud-style-guide
 [openai_client_class]: https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/openai/Azure.AI.OpenAI/src/Generated/OpenAIClient.cs
 [openai_rest]: https://learn.microsoft.com/azure/cognitive-services/openai/reference
 [azure_openai_completions_docs]: https://learn.microsoft.com/azure/cognitive-services/openai/how-to/completions
-[azure_openai_embeddgings_docs]: https://learn.microsoft.com/azure/cognitive-services/openai/concepts/understand-embeddings
+[azure_openai_embeddings_docs]: https://learn.microsoft.com/azure/cognitive-services/openai/concepts/understand-embeddings
 [openai_contrib]: https://github.com/Azure/azure-sdk-for-net/blob/main/CONTRIBUTING.md
 [cla]: https://cla.microsoft.com
 [code_of_conduct]: https://opensource.microsoft.com/codeofconduct/

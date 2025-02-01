@@ -20,17 +20,30 @@ namespace Azure.ResourceManager.EventHubs.Models
 
         void IJsonModel<EventHubDestination>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<EventHubDestination>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(EventHubDestination)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             if (Optional.IsDefined(Name))
             {
                 writer.WritePropertyName("name"u8);
                 writer.WriteStringValue(Name);
+            }
+            if (Optional.IsDefined(Identity))
+            {
+                writer.WritePropertyName("identity"u8);
+                writer.WriteObjectValue(Identity, options);
             }
             writer.WritePropertyName("properties"u8);
             writer.WriteStartObject();
@@ -80,7 +93,6 @@ namespace Azure.ResourceManager.EventHubs.Models
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         EventHubDestination IJsonModel<EventHubDestination>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -104,6 +116,7 @@ namespace Azure.ResourceManager.EventHubs.Models
                 return null;
             }
             string name = default;
+            EventHubsCaptureIdentity identity = default;
             ResourceIdentifier storageAccountResourceId = default;
             string blobContainer = default;
             string archiveNameFormat = default;
@@ -117,6 +130,15 @@ namespace Azure.ResourceManager.EventHubs.Models
                 if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
+                    continue;
+                }
+                if (property.NameEquals("identity"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    identity = EventHubsCaptureIdentity.DeserializeEventHubsCaptureIdentity(property.Value, options);
                     continue;
                 }
                 if (property.NameEquals("properties"u8))
@@ -177,6 +199,7 @@ namespace Azure.ResourceManager.EventHubs.Models
             serializedAdditionalRawData = rawDataDictionary;
             return new EventHubDestination(
                 name,
+                identity,
                 storageAccountResourceId,
                 blobContainer,
                 archiveNameFormat,
@@ -217,6 +240,21 @@ namespace Azure.ResourceManager.EventHubs.Models
                     {
                         builder.AppendLine($"'{Name}'");
                     }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Identity), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  identity: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Identity))
+                {
+                    builder.Append("  identity: ");
+                    BicepSerializationHelpers.AppendChildObject(builder, Identity, options, 2, false, "  identity: ");
                 }
             }
 

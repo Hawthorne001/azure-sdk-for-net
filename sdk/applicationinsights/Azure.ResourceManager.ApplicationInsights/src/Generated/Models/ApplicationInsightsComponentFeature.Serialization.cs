@@ -21,13 +21,21 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
 
         void IJsonModel<ApplicationInsightsComponentFeature>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<ApplicationInsightsComponentFeature>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(ApplicationInsightsComponentFeature)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             if (options.Format != "W" && Optional.IsDefined(FeatureName))
             {
                 writer.WritePropertyName("FeatureName"u8);
@@ -93,7 +101,6 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         ApplicationInsightsComponentFeature IJsonModel<ApplicationInsightsComponentFeature>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -119,7 +126,7 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
             string featureName = default;
             string meterId = default;
             string meterRateFrequency = default;
-            string resouceId = default;
+            ResourceIdentifier resouceId = default;
             bool? isHidden = default;
             IReadOnlyList<ApplicationInsightsComponentFeatureCapability> capabilities = default;
             string title = default;
@@ -146,7 +153,11 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
                 }
                 if (property.NameEquals("ResouceId"u8))
                 {
-                    resouceId = property.Value.GetString();
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    resouceId = new ResourceIdentifier(property.Value.GetString());
                     continue;
                 }
                 if (property.NameEquals("IsHidden"u8))
@@ -301,15 +312,7 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
                 if (Optional.IsDefined(ResourceId))
                 {
                     builder.Append("  ResouceId: ");
-                    if (ResourceId.Contains(Environment.NewLine))
-                    {
-                        builder.AppendLine("'''");
-                        builder.AppendLine($"{ResourceId}'''");
-                    }
-                    else
-                    {
-                        builder.AppendLine($"'{ResourceId}'");
-                    }
+                    builder.AppendLine($"'{ResourceId.ToString()}'");
                 }
             }
 

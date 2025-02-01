@@ -1,13 +1,23 @@
 # Release History
 
-## 0.1.0 (2024-04-24)
+## 1.1.0-beta.1 (Unreleased)
 
 ### Features Added
 
-- Initial non-beta release.
+### Breaking Changes
 
-## 0.1.0-beta.1 (2024-04-04)
+### Bugs Fixed
+
+### Other Changes
+
+## 1.0.0 (2024-10-25)
 
 ### Features Added
 
-- Initial beta release of Azure.Provisioning.SignalR.
+- The new Azure.Provisioning experience.
+
+## 1.0.0-beta.1 (2024-10-04)
+
+### Features Added
+
+- Preview of the new Azure.Provisioning experience.

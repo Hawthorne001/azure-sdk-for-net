@@ -20,13 +20,21 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
 
         void IJsonModel<ApplicationInsightsComponentQuotaStatus>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<ApplicationInsightsComponentQuotaStatus>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(ApplicationInsightsComponentQuotaStatus)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             if (options.Format != "W" && Optional.IsDefined(AppId))
             {
                 writer.WritePropertyName("AppId"u8);
@@ -37,10 +45,10 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
                 writer.WritePropertyName("ShouldBeThrottled"u8);
                 writer.WriteBooleanValue(ShouldBeThrottled.Value);
             }
-            if (options.Format != "W" && Optional.IsDefined(ExpirationTime))
+            if (options.Format != "W" && Optional.IsDefined(ExpireOn))
             {
                 writer.WritePropertyName("ExpirationTime"u8);
-                writer.WriteStringValue(ExpirationTime);
+                writer.WriteStringValue(ExpireOn.Value, "O");
             }
             if (options.Format != "W" && _serializedAdditionalRawData != null)
             {
@@ -57,7 +65,6 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         ApplicationInsightsComponentQuotaStatus IJsonModel<ApplicationInsightsComponentQuotaStatus>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -82,7 +89,7 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
             }
             string appId = default;
             bool? shouldBeThrottled = default;
-            string expirationTime = default;
+            DateTimeOffset? expirationTime = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
@@ -103,7 +110,11 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
                 }
                 if (property.NameEquals("ExpirationTime"u8))
                 {
-                    expirationTime = property.Value.GetString();
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    expirationTime = property.Value.GetDateTimeOffset("O");
                     continue;
                 }
                 if (options.Format != "W")
@@ -165,7 +176,7 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
                 }
             }
 
-            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ExpirationTime), out propertyOverride);
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ExpireOn), out propertyOverride);
             if (hasPropertyOverride)
             {
                 builder.Append("  ExpirationTime: ");
@@ -173,18 +184,11 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
             }
             else
             {
-                if (Optional.IsDefined(ExpirationTime))
+                if (Optional.IsDefined(ExpireOn))
                 {
                     builder.Append("  ExpirationTime: ");
-                    if (ExpirationTime.Contains(Environment.NewLine))
-                    {
-                        builder.AppendLine("'''");
-                        builder.AppendLine($"{ExpirationTime}'''");
-                    }
-                    else
-                    {
-                        builder.AppendLine($"'{ExpirationTime}'");
-                    }
+                    var formattedDateTimeString = TypeFormatters.ToString(ExpireOn.Value, "o");
+                    builder.AppendLine($"'{formattedDateTimeString}'");
                 }
             }
 

@@ -8,8 +8,8 @@ azure-arm: true
 csharp: true
 library-name: NetApp
 namespace: Azure.ResourceManager.NetApp
-require: https://github.com/Azure/azure-rest-api-specs/blob/ac74f8d5cf37351c5b26ecf2df17128d0408bd8e/specification/netapp/resource-manager/readme.md
-tag: package-netapp-2023-07-01
+require: https://github.com/Azure/azure-rest-api-specs/blob/cb96711fe5924dd4b642f6ffc9195db3467ea2ed/specification/netapp/resource-manager/readme.md
+tag: package-preview-2024-07-01-preview
 output-folder: $(this-folder)/Generated
 clear-output-folder: true
 sample-gen:
@@ -55,6 +55,7 @@ acronym-mapping:
   SAP: Sap
   TLS: Tls
   ZRS: Zrs
+
 
 request-path-to-resource-name:
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetApp/netAppAccounts/{accountName}/accountBackups/{backupName}: NetAppAccountBackup
@@ -102,6 +103,12 @@ prepend-rp-prefix:
   - RegionInfo
   - EncryptionIdentity
   - BackupVault
+  - ChangeKeyVault
+  - DestinationReplication
+  - EncryptionTransitionRequest
+  - KeyVaultPrivateEndpoint
+  - ReplicationType
+  - VolumeLanguage
 
 rename-mapping:
   CapacityPool.properties.poolId: -|uuid
@@ -238,7 +245,16 @@ rename-mapping:
   GetGroupIdListForLdapUserResponse: GetGroupIdListForLdapUserResult
   BackupsMigrationRequest: BackupsMigrationContent
   Backup.properties.volumeResourceId: -|arm-id
-
+  Backup.properties.backupPolicyResourceId: BackupPolicyArmResourceId
+  KeyVaultProperties.keyVaultResourceId: keyVaultArmResourceId
+  ClusterPeerCommandResponse: ClusterPeerCommandResult
+  SvmPeerCommandResponse: SvmPeerCommandResult
+  Volume.properties.snapshotId: -|string
+  VolumeRevert.snapshotId: -|string
+  Volume.properties.backupId: -|string
+  BackupsMigrationRequest.backupVaultId: -|string
+  ListQuotaReportResponse: NetAppVolumeQuotaReportListResult
+  QuotaReport: NetAppVolumeQuotaReport
 
 models-to-treat-empty-string-as-null:
 - VolumeSnapshotProperties

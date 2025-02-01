@@ -19,13 +19,21 @@ namespace Azure.ResourceManager.Compute.Models
 
         void IJsonModel<GalleryList>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<GalleryList>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(GalleryList)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             writer.WritePropertyName("value"u8);
             writer.WriteStartArray();
             foreach (var item in Value)
@@ -37,6 +45,11 @@ namespace Azure.ResourceManager.Compute.Models
             {
                 writer.WritePropertyName("nextLink"u8);
                 writer.WriteStringValue(NextLink);
+            }
+            if (Optional.IsDefined(SecurityProfile))
+            {
+                writer.WritePropertyName("securityProfile"u8);
+                writer.WriteObjectValue(SecurityProfile, options);
             }
             if (options.Format != "W" && _serializedAdditionalRawData != null)
             {
@@ -53,7 +66,6 @@ namespace Azure.ResourceManager.Compute.Models
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         GalleryList IJsonModel<GalleryList>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -78,6 +90,7 @@ namespace Azure.ResourceManager.Compute.Models
             }
             IReadOnlyList<GalleryData> value = default;
             string nextLink = default;
+            ImageVersionSecurityProfile securityProfile = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
@@ -97,13 +110,22 @@ namespace Azure.ResourceManager.Compute.Models
                     nextLink = property.Value.GetString();
                     continue;
                 }
+                if (property.NameEquals("securityProfile"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    securityProfile = ImageVersionSecurityProfile.DeserializeImageVersionSecurityProfile(property.Value, options);
+                    continue;
+                }
                 if (options.Format != "W")
                 {
                     rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
                 }
             }
             serializedAdditionalRawData = rawDataDictionary;
-            return new GalleryList(value, nextLink, serializedAdditionalRawData);
+            return new GalleryList(value, nextLink, securityProfile, serializedAdditionalRawData);
         }
 
         BinaryData IPersistableModel<GalleryList>.Write(ModelReaderWriterOptions options)

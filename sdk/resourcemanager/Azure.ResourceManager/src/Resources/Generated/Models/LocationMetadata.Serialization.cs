@@ -21,13 +21,21 @@ namespace Azure.ResourceManager.Resources.Models
 
         void IJsonModel<LocationMetadata>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<LocationMetadata>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(LocationMetadata)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             if (options.Format != "W" && Optional.IsDefined(RegionType))
             {
                 writer.WritePropertyName("regionType"u8);
@@ -51,12 +59,12 @@ namespace Azure.ResourceManager.Resources.Models
             if (options.Format != "W" && Optional.IsDefined(Longitude))
             {
                 writer.WritePropertyName("longitude"u8);
-                WriteLongitude(writer);
+                WriteLongitude(writer, options);
             }
             if (options.Format != "W" && Optional.IsDefined(Latitude))
             {
                 writer.WritePropertyName("latitude"u8);
-                WriteLatitude(writer);
+                WriteLatitude(writer, options);
             }
             if (options.Format != "W" && Optional.IsDefined(PhysicalLocation))
             {
@@ -93,7 +101,6 @@ namespace Azure.ResourceManager.Resources.Models
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         LocationMetadata IJsonModel<LocationMetadata>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)

@@ -21,13 +21,21 @@ namespace Azure.ResourceManager.OperationalInsights.Models
 
         void IJsonModel<SearchMetadata>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<SearchMetadata>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(SearchMetadata)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             if (Optional.IsDefined(SearchId))
             {
                 writer.WritePropertyName("requestId"u8);
@@ -138,7 +146,6 @@ namespace Azure.ResourceManager.OperationalInsights.Models
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         SearchMetadata IJsonModel<SearchMetadata>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -170,7 +177,7 @@ namespace Azure.ResourceManager.OperationalInsights.Models
             string status = default;
             DateTimeOffset? startTime = default;
             DateTimeOffset? lastUpdated = default;
-            ETag? eTag = default;
+            ETag? etag = default;
             IReadOnlyList<SearchSort> sort = default;
             long? requestTime = default;
             string aggregatedValueField = default;
@@ -258,7 +265,7 @@ namespace Azure.ResourceManager.OperationalInsights.Models
                     {
                         continue;
                     }
-                    eTag = new ETag(property.Value.GetString());
+                    etag = new ETag(property.Value.GetString());
                     continue;
                 }
                 if (property.NameEquals("sort"u8))
@@ -337,7 +344,7 @@ namespace Azure.ResourceManager.OperationalInsights.Models
                 status,
                 startTime,
                 lastUpdated,
-                eTag,
+                etag,
                 sort ?? new ChangeTrackingList<SearchSort>(),
                 requestTime,
                 aggregatedValueField,
