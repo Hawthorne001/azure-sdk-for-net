@@ -13,11 +13,11 @@ using Azure.Core;
 
 namespace Azure.ResourceManager.Batch.Models
 {
-    internal partial class DiskEncryptionConfiguration : IUtf8JsonSerializable, IJsonModel<DiskEncryptionConfiguration>
+    public partial class BatchDiskEncryptionConfiguration : IUtf8JsonSerializable, IJsonModel<BatchDiskEncryptionConfiguration>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<DiskEncryptionConfiguration>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<BatchDiskEncryptionConfiguration>)this).Write(writer, ModelSerializationExtensions.WireOptions);
 
-        void IJsonModel<DiskEncryptionConfiguration>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        void IJsonModel<BatchDiskEncryptionConfiguration>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
             JsonModelWriteCore(writer, options);
@@ -28,10 +28,10 @@ namespace Azure.ResourceManager.Batch.Models
         /// <param name="options"> The client options for reading and writing models. </param>
         protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            var format = options.Format == "W" ? ((IPersistableModel<DiskEncryptionConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+            var format = options.Format == "W" ? ((IPersistableModel<BatchDiskEncryptionConfiguration>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
-                throw new FormatException($"The model {nameof(DiskEncryptionConfiguration)} does not support writing '{format}' format.");
+                throw new FormatException($"The model {nameof(BatchDiskEncryptionConfiguration)} does not support writing '{format}' format.");
             }
 
             if (Optional.IsCollectionDefined(Targets))
@@ -43,6 +43,11 @@ namespace Azure.ResourceManager.Batch.Models
                     writer.WriteStringValue(item.ToSerialString());
                 }
                 writer.WriteEndArray();
+            }
+            if (Optional.IsDefined(CustomerManagedKey))
+            {
+                writer.WritePropertyName("customerManagedKey"u8);
+                writer.WriteObjectValue(CustomerManagedKey, options);
             }
             if (options.Format != "W" && _serializedAdditionalRawData != null)
             {
@@ -61,19 +66,19 @@ namespace Azure.ResourceManager.Batch.Models
             }
         }
 
-        DiskEncryptionConfiguration IJsonModel<DiskEncryptionConfiguration>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        BatchDiskEncryptionConfiguration IJsonModel<BatchDiskEncryptionConfiguration>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            var format = options.Format == "W" ? ((IPersistableModel<DiskEncryptionConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+            var format = options.Format == "W" ? ((IPersistableModel<BatchDiskEncryptionConfiguration>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
-                throw new FormatException($"The model {nameof(DiskEncryptionConfiguration)} does not support reading '{format}' format.");
+                throw new FormatException($"The model {nameof(BatchDiskEncryptionConfiguration)} does not support reading '{format}' format.");
             }
 
             using JsonDocument document = JsonDocument.ParseValue(ref reader);
-            return DeserializeDiskEncryptionConfiguration(document.RootElement, options);
+            return DeserializeBatchDiskEncryptionConfiguration(document.RootElement, options);
         }
 
-        internal static DiskEncryptionConfiguration DeserializeDiskEncryptionConfiguration(JsonElement element, ModelReaderWriterOptions options = null)
+        internal static BatchDiskEncryptionConfiguration DeserializeBatchDiskEncryptionConfiguration(JsonElement element, ModelReaderWriterOptions options = null)
         {
             options ??= ModelSerializationExtensions.WireOptions;
 
@@ -82,6 +87,7 @@ namespace Azure.ResourceManager.Batch.Models
                 return null;
             }
             IList<BatchDiskEncryptionTarget> targets = default;
+            BatchDiskCustomerManagedKey customerManagedKey = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
@@ -100,44 +106,53 @@ namespace Azure.ResourceManager.Batch.Models
                     targets = array;
                     continue;
                 }
+                if (property.NameEquals("customerManagedKey"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    customerManagedKey = BatchDiskCustomerManagedKey.DeserializeBatchDiskCustomerManagedKey(property.Value, options);
+                    continue;
+                }
                 if (options.Format != "W")
                 {
                     rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
                 }
             }
             serializedAdditionalRawData = rawDataDictionary;
-            return new DiskEncryptionConfiguration(targets ?? new ChangeTrackingList<BatchDiskEncryptionTarget>(), serializedAdditionalRawData);
+            return new BatchDiskEncryptionConfiguration(targets ?? new ChangeTrackingList<BatchDiskEncryptionTarget>(), customerManagedKey, serializedAdditionalRawData);
         }
 
-        BinaryData IPersistableModel<DiskEncryptionConfiguration>.Write(ModelReaderWriterOptions options)
+        BinaryData IPersistableModel<BatchDiskEncryptionConfiguration>.Write(ModelReaderWriterOptions options)
         {
-            var format = options.Format == "W" ? ((IPersistableModel<DiskEncryptionConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+            var format = options.Format == "W" ? ((IPersistableModel<BatchDiskEncryptionConfiguration>)this).GetFormatFromOptions(options) : options.Format;
 
             switch (format)
             {
                 case "J":
                     return ModelReaderWriter.Write(this, options, AzureResourceManagerBatchContext.Default);
                 default:
-                    throw new FormatException($"The model {nameof(DiskEncryptionConfiguration)} does not support writing '{options.Format}' format.");
+                    throw new FormatException($"The model {nameof(BatchDiskEncryptionConfiguration)} does not support writing '{options.Format}' format.");
             }
         }
 
-        DiskEncryptionConfiguration IPersistableModel<DiskEncryptionConfiguration>.Create(BinaryData data, ModelReaderWriterOptions options)
+        BatchDiskEncryptionConfiguration IPersistableModel<BatchDiskEncryptionConfiguration>.Create(BinaryData data, ModelReaderWriterOptions options)
         {
-            var format = options.Format == "W" ? ((IPersistableModel<DiskEncryptionConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+            var format = options.Format == "W" ? ((IPersistableModel<BatchDiskEncryptionConfiguration>)this).GetFormatFromOptions(options) : options.Format;
 
             switch (format)
             {
                 case "J":
                     {
                         using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
-                        return DeserializeDiskEncryptionConfiguration(document.RootElement, options);
+                        return DeserializeBatchDiskEncryptionConfiguration(document.RootElement, options);
                     }
                 default:
-                    throw new FormatException($"The model {nameof(DiskEncryptionConfiguration)} does not support reading '{options.Format}' format.");
+                    throw new FormatException($"The model {nameof(BatchDiskEncryptionConfiguration)} does not support reading '{options.Format}' format.");
             }
         }
 
-        string IPersistableModel<DiskEncryptionConfiguration>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
+        string IPersistableModel<BatchDiskEncryptionConfiguration>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }
